@@ -1,6 +1,7 @@
 
-import { Link   } from "react-router-dom";
-
+import { Link, useNavigate   } from "react-router-dom";
+import { FormEvent, useState } from "react";
+import { db } from "../services/Firebase"
 
 import illustrationsImg from '../assets/images/illustration.svg'
 import logoImg from '../assets/images/logo.svg'
@@ -13,6 +14,24 @@ import '../styles/auth.scss'
 
 export function NewRoom(){
    const { user} = useAuth()
+   const history = useNavigate();
+   const [newRoom,setNewRoom] = useState('');
+   
+   async function handleCreateRoom(event:FormEvent){
+       event.preventDefault();
+      
+       if(newRoom.trim() === ""){
+           return;
+       }
+
+       const roomRef = db.ref('rooms')
+       const fireBaseRoom = await roomRef.push({
+           title: newRoom,
+           authorId: user?.id,
+       })
+       history(`/rooms/${fireBaseRoom.key}`)
+
+   }
     
     return(
         <div id="page-auth">
@@ -26,10 +45,10 @@ export function NewRoom(){
             <main >
                 <div className="main-content">
             <img src={logoImg} alt="Letmeask" />
-           <h1>{user?.name}</h1>
+           
                <h2>Criar um nova sala</h2>
-                    <form action="">
-                        <input type="text" placeholder="Nome da sala"/>
+                    <form onSubmit={handleCreateRoom}>
+                        <input type="text" placeholder="Nome da sala" onChange={event=>setNewRoom(event.target.value)}/>
                         <Button type="submit">Criar sala</Button>
                     </form>
                     <p>Quer entrar em um sala existente?<Link to="/">Clique aqui</Link></p>

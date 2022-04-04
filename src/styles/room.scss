@@ -62,8 +62,26 @@
                 align-items:center;
                 margin-top: 1rem;
 
+                .user-info{
+                    display:flex;
+                    align-items:center;
 
-                span {
+                    img{
+                        width: 2rem;
+                        height: 2rem;
+                        border-radius: 50%;
+                    }
+
+                    span{
+                        margin-left: 0.5rem;
+                        color: #29292e;
+                        font-size: 0.8rem;
+                        font-weight: 500;
+                    }
+                }
+
+
+                > span {
                     font-size: 14px;
                     color: #737388;
                     font-weight: 500;
@@ -79,6 +97,7 @@
 
 
                     }
+                    
                 }
             }
         }

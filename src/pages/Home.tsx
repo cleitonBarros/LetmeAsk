@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-
+import toast, { Toaster } from 'react-hot-toast';
 import { useAuth } from "../hooks/useAuth";
 import {Button} from '../components/button'
 
@@ -17,6 +17,9 @@ export function Home(){
     const history = useNavigate();
     const { user, signInWithGoogle   } = useAuth();
     const [roomCode, setRoomCode] = useState('');
+    const notify = () => toast.error('A sala nao existe');
+      
+   
 
     
 
@@ -30,6 +33,7 @@ export function Home(){
     async function handleJoinRoom(event:FormEvent){
         event.preventDefault()
 
+        
         if(roomCode.trim() === ""){
             return;
         }
@@ -37,11 +41,13 @@ export function Home(){
         const roomRef =  await db.ref(`rooms/${roomCode}`).get()
 
         if(!roomRef.exists()){
-            alert('room does not exists')
+            notify();
+            setRoomCode('');
             return;
         }
-
+        
         history(`/rooms/${roomCode}`)
+       
     }
 
     return(
@@ -64,9 +70,32 @@ export function Home(){
                     <form onSubmit={handleJoinRoom} >
                         <input type="text" placeholder="Digite o codigo da sala" onChange={event=>setRoomCode(event.target.value)} value={roomCode}
                         />
-                        <Button type="submit">Entrar na sala</Button>
+                        <Button type="submit" >Entrar na sala</Button>
                     </form>
                 </div>
+                <Toaster 
+                position="top-right"
+                reverseOrder={true}
+                gutter={8}
+                toastOptions={{
+                    // Define default options
+                    className: '',
+                    duration: 1500,
+                    style: {
+                      background: '#835afd',
+                      color: '#fff',
+                    },
+                    // Default options for specific types
+                    error: {
+                      duration: 1500,
+                      theme: {
+                        primary: 'purple',
+                        secondary: 'white',
+                      },
+                    },
+                
+                  }}
+                />
             </main>
           
         </div>

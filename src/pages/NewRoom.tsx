@@ -12,10 +12,13 @@ import { useAuth } from "../hooks/useAuth";
 
 import '../styles/auth.scss'
 
+
+
 export function NewRoom(){
    const { user} = useAuth()
    const history = useNavigate();
    const [newRoom,setNewRoom] = useState('');
+ 
    
    async function handleCreateRoom(event:FormEvent){
        event.preventDefault();
@@ -49,10 +52,11 @@ export function NewRoom(){
                <h2>Criar um nova sala</h2>
                     <form onSubmit={handleCreateRoom}>
                         <input type="text" placeholder="Nome da sala" onChange={event=>setNewRoom(event.target.value)}/>
-                        <Button type="submit">Criar sala</Button>
+                        <Button type="submit" >Criar sala</Button>
                     </form>
                     <p>Quer entrar em um sala existente?<Link to="/">Clique aqui</Link></p>
                 </div>
+               
             </main>
           
         </div>

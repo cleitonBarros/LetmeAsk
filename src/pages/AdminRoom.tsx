@@ -11,7 +11,7 @@ import  toast, { Toaster } from 'react-hot-toast'
 import { Question } from '../components/Question'
 import { useRoom } from '../hooks/useRoom'
 
-export function Rooms(){
+export function AdminRoom(){
 
    
     type RoomParams ={
@@ -71,7 +71,10 @@ export function Rooms(){
            <header>
                <div className="content">
                    <img src={logoImg} alt="letmeask" />
+                   <div>
                    <RoomCode code={params.id!}/>
+                    <Button isOutlined>Encerrar sala</Button>
+                   </div>
                </div>
            </header>
            <main >
@@ -81,24 +84,7 @@ export function Rooms(){
                    {questions.length> 0 &&  <span>{questions.length }perguntas</span>}
                   
                </div>
-               <form onSubmit={handleSendQuestion}>
-                   <textarea placeholder="O que voce quer perguntara ?"
-                   onChange={event => setNewQuestion(event.target.value)}  value={newQuestion}
-                   />
-                   <div className="form-footer">
-                    
-                    {user ? ( 
-                        <div className="user-info">
-                            <img src={user.avatar} alt={user.name} />
-                            <span>{user.name}</span>
-
-                        </div>
-                    ) : (
-                        <span>Para enviar um pergunta,<button>faça seu login </button></span>
-                    ) }
-                       <Button type="submit" disabled={!user}>EnviarPergunta</Button>
-                   </div>
-               </form>
+             
                <Toaster
                  position="top-center"
                  reverseOrder={false}

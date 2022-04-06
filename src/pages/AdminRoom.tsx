@@ -60,7 +60,7 @@ export function AdminRoom(){
             isAnswer: false
         }
         questionNotify();
-        await db.ref(`rooms/${roomId}/questions`).push(question)
+        await db.ref(`admin/rooms/${roomId}/questions`).push(question)
 
         setNewQuestion('')
     }
@@ -126,7 +126,7 @@ export function AdminRoom(){
                         key = {question.id}
                         content={question.content} 
                         author={ question.author}                      
-                          />
+                        />
                     )
                 })}
                 </div>

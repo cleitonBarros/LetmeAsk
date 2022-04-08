@@ -1,15 +1,18 @@
 import logoImg from '../assets/images/logo.svg'
+import deleteImg from '../assets/images/delete.svg';
+import checkImg from '../assets/images/check.svg';
+import answerImg from '../assets/images/answer.svg';
 import { Button } from '../components/button'
 import { RoomCode } from '../components/RoomCode'
-import {useParams} from 'react-router-dom'
-import { FormEvent, useState } from 'react'
-import { useAuth } from '../hooks/useAuth'
+import {useNavigate, useParams} from 'react-router-dom'
+
 
 import "../styles/room.scss"
-import { db } from '../services/Firebase'
+
 import  toast, { Toaster } from 'react-hot-toast'
 import { Question } from '../components/Question'
 import { useRoom } from '../hooks/useRoom'
+import { db } from '../services/Firebase'
 
 export function AdminRoom(){
 
@@ -20,13 +23,16 @@ export function AdminRoom(){
 
     const params = useParams<RoomParams>();
     const roomId = params.id;
-    const {user} = useAuth();
-    const [newQuestion,setNewQuestion]= useState('')
+
+    //
+    const history = useNavigate();
+  
+    // enviar o roomId pro hooks useRoom e recebe title e a quetão
     const {title, questions} = useRoom(roomId!)
     
   
     //toast
-    const voidNotify = () => toast.error('Campo vazio! Preencha-o' ,{
+   /* const voidNotify = () => toast.error('Campo vazio! Preencha-o' ,{
         id: 'clipboard',
       });
     const logNotify = () => toast.error('Realize o login para continar' ,{
@@ -34,38 +40,39 @@ export function AdminRoom(){
       });
     const questionNotify = () => toast.success('Enviado' ,{
         id: 'clipboard',
-      });
+      });*/
+      
 
+      //fecha a sala e manda para home
+      async function handleCloseRoom(){
+        await db.ref(`room/${roomId}/`).update({
+          endedAt: new Date(),
+        })
 
-    async function handleSendQuestion(event: FormEvent){
-         event.preventDefault()
+        history('/')
 
-        if(newQuestion.trim() === ''){
-            voidNotify();
-            return;
-        }
-
-        if(!user){
-            logNotify();
-            throw new  Error('you must be logged')
-        }
-
-        const question ={
-            content: newQuestion,
-            author:{
-                name: user.name,
-                avatar: user.avatar,
-            },
-            isHighlighted: false,
-            isAnswer: false
-        }
-        questionNotify();
-        await db.ref(`admin/rooms/${roomId}/questions`).push(question)
-
-        setNewQuestion('')
     }
+      //exclui a pergunta
+      async function handleDeleteQuestion(questionId: string){
+       if( window.confirm("Tem certeza que deseja excluir a pergunta?")){
+         await db.ref(`rooms/${roomId}/questions/${questionId}`).remove();
+       }
 
+     }
 
+     async function handleCheckQuestionAsAnswered(questionId: string){
+       await db.ref(`rooms/${roomId}/questions/${questionId}`).update({
+         isAnswer: true,
+       })
+
+     }
+     
+     async function handleHighLightQuestion(questionId: string){
+      await db.ref(`rooms/${roomId}/questions/${questionId}`).update({
+        isHighlighted: true,
+      })
+
+     }
     return(
        <div id="page-room">
            <header>
@@ -73,7 +80,7 @@ export function AdminRoom(){
                    <img src={logoImg} alt="letmeask" />
                    <div>
                    <RoomCode code={params.id!}/>
-                    <Button isOutlined>Encerrar sala</Button>
+                    <Button onClick= {handleCloseRoom} isOutlined>Encerrar sala</Button>
                    </div>
                </div>
            </header>
@@ -84,8 +91,41 @@ export function AdminRoom(){
                    {questions.length> 0 &&  <span>{questions.length }perguntas</span>}
                   
                </div>
-             
-               <Toaster
+                <div className="question-list">
+                {questions.map(question =>{
+           
+                    return(
+                        <Question
+                        key = {question.id}
+                        content={question.content} 
+                        author={ question.author}
+                        isAnswer ={question.isAnswer}
+                        isHighlighted ={ question.isHighlighted}
+                        
+                        >
+                    {!question.isAnswer && (
+                       <>
+                        <button type="button"  onClick={() => handleCheckQuestionAsAnswered(question.id)} >
+                             <img src={checkImg} alt="Marcar pergunta como respondida" />
+                        </button>
+
+                        <button   type="button" onClick={() => handleHighLightQuestion(question.id)} >
+                              <img src={answerImg} alt="Dar destaque à pergunta" />
+                        </button>
+                        </> 
+                        )}
+
+                        <button type="button" onClick={() => handleDeleteQuestion(question.id)} >
+                        <img src={deleteImg} alt="Remover pergunta" />
+                        </button>
+
+
+                        </Question> 
+          
+                    )
+                })}
+                </div>
+                <Toaster
                  position="top-center"
                  reverseOrder={false}
                  
@@ -118,18 +158,6 @@ export function AdminRoom(){
                 
                   }}
                 />
-                <div className="question-list">
-
-                {questions.map(question =>{
-                    return(
-                        <Question
-                        key = {question.id}
-                        content={question.content} 
-                        author={ question.author}                      
-                        />
-                    )
-                })}
-                </div>
            </main>
        </div>
     )

@@ -1,6 +1,6 @@
 
 import{BrowserRouter, Routes, Route } from 'react-router-dom'
-
+//-Mzp1GxgTLI1d8_ct-2p
 import {Home} from './pages/Home';
 import {NewRoom} from './pages/NewRoom';
 import { Rooms } from './pages/Rooms';
@@ -21,7 +21,7 @@ function App() {
         <Route path="/"  element={<Home/>}/>
         <Route path="/room/new" element={<NewRoom/>}/>
         <Route path="/rooms/:id" element={<Rooms/>}/>
-        <Route path="/admin/rooms/:id " element={<AdminRoom/>}/>
+        <Route path="/admin/rooms/:id" element={<AdminRoom/>}/>
 
        </Routes>
      </AuthContextProvider> 

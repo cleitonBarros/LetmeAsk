@@ -46,8 +46,36 @@ export function Home(){
             return;
         }
         
+        if(roomRef.val().endedAt){
+            alert('room alredy closed ')
+            return;
+        }
         history(`/rooms/${roomCode}`)
        
+    }
+    async function handleAdminRoom (event:FormEvent) {
+        event.preventDefault()
+
+        
+        if(roomCode.trim() === ""){
+            return;
+        }
+
+        const roomRef =  await db.ref(`rooms/${roomCode}`).get()
+
+        if(!roomRef.exists()){
+            notify();
+            setRoomCode('');
+            return;
+        }
+        
+        if(roomRef.val().endedAt){
+            alert('room alredy closed ')
+            return;
+        }
+        history(`/admin/rooms/${roomCode}`)
+    
+
     }
 
     return(
@@ -71,6 +99,11 @@ export function Home(){
                         <input type="text" placeholder="Digite o codigo da sala" onChange={event=>setRoomCode(event.target.value)} value={roomCode}
                         />
                         <Button type="submit" >Entrar na sala</Button>
+                    </form>
+                    <form onSubmit={handleAdminRoom} >
+                    <input type="text" placeholder="Digite o codigo da sala" onChange={event=>setRoomCode(event.target.value)} value={roomCode}
+                        />
+                        <Button type="submit" >Admin</Button>
                     </form>
                 </div>
                 <Toaster 
